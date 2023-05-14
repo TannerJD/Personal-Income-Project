@@ -24,7 +24,25 @@ setwd(current_file_path)
 income_data = read_csv("County Income 2021 5-Year ACS Census.csv")
 edu_data = read_csv("County Educational Attainment 2021 5-Year ACS Census.csv")
 mobil_data = read_csv("County Geographic Mobility Past Year 2021 5-Year ACS.csv")
-indmix_data = read_csv("")
+indmix_data = read_csv("County Industry Mix 2021 5-Year ACS Census.csv")
+first_degree_data = read_csv("County First Bachelor's Field 2021 5-Year ACS.csv")
+
+income_data$`Label (Grouping)` = trimws(income_data$`Label (Grouping)`,whitespace = "[\\h\\v]")
+edu_data$`Label (Grouping)` = trimws(edu_data$`Label (Grouping)`,whitespace = "[\\h\\v]")
+mobil_data$`Label (Grouping)` = trimws(mobil_data$`Label (Grouping)`,whitespace = "[\\h\\v]")
+indmix_data$`Label (Grouping)` = trimws(indmix_data$`Label (Grouping)`,whitespace = "[\\h\\v]")
+first_degree_data$`Label (Grouping)` = trimws(first_degree_data$`Label (Grouping)`,whitespace = "[\\h\\v]")
 
 
-income_data$Label..Grouping. = trimws(income_data$Label..Grouping.,whitespace = "[\\h\\v]")
+
+
+temp_cols = (grep("Total!!Estimate", names(indmix_data), value = TRUE))
+print(temp_cols)
+indmix_mod_data = indmix_data[, c("Label (Grouping)", temp_cols)]
+
+indmix_mod_data = indmix_mod_data[-c(2,9,13,16,20,23),]
+# sum(indmix_mod_data$`Autauga County, Alabama!!Total!!Estimate`)/2
+
+
+
+
