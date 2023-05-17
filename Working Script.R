@@ -209,3 +209,214 @@ for (i in 32:36)
 }
 
 mobil_mod_data$`Label (Grouping)` = name_col
+
+
+
+
+
+print(colnames(indmix_mod_data))
+counties = colnames(indmix_mod_data)
+counties = counties[-1]
+print(counties)
+
+counties = substring(counties, 1, regexpr(",",counties) - 1)
+print(counties)
+
+
+
+# IMPORTANT:
+# The below code is the initial declaration of total_frame
+
+total_frame = data.frame(county = counties)
+print(total_frame)
+
+
+# 
+# 
+# The below code adds the total household number
+#     from the income data set as a column to the 
+#     total_frame data frame
+# 
+#--------------------------------------------------------
+
+temp_cols = (grep("Number!!Estimate", names(income_mod_data), value = TRUE))
+temp_frame = income_mod_data[,c("Label (Grouping)", temp_cols)]
+
+# The code directly below removes every character from column names after a comma and removes the comma as well
+# But it excludes the first column name
+colnames(temp_frame) = substring(names(temp_frame), 1, ifelse(seq_along(names(temp_frame)) > 1, regexpr(",", names(temp_frame)) - 1, nchar(names(temp_frame))))
+
+
+temp_add = unname(as.vector(t(temp_frame[2, ])))
+num_households = as.numeric(temp_add[-1])
+total_frame$num_households = num_households
+
+#--------------------------------------------------------
+
+
+
+
+temp_add = unname(as.vector(t(temp_frame[4, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_white_only_household_head = temp_add
+
+
+temp_add = unname(as.vector(t(temp_frame[5, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_black_only_household_head = temp_add
+
+
+temp_add = unname(as.vector(t(temp_frame[6, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_american_indian_or_alaskan_native_only_household_head = temp_add
+
+
+temp_add = unname(as.vector(t(temp_frame[7, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_asian_only_household_head = temp_add
+
+
+temp_add = unname(as.vector(t(temp_frame[8, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_native_hawaiian_or_other_pacific_islander_only_household_head = temp_add
+
+
+temp_add = unname(as.vector(t(temp_frame[9, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_some_other_race_only_household_head = temp_add
+
+
+temp_add = unname(as.vector(t(temp_frame[10, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_two_or_more_races_household_head = temp_add
+
+
+temp_add = unname(as.vector(t(temp_frame[11, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_hispanic_or_latino_origin_of_any_race_household_head = temp_add
+
+
+temp_add = unname(as.vector(t(temp_frame[12, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$num_white_alone_not_hispanic_or_latino_household_head = temp_add
+
+
+
+
+
+total_frame$frac_white_only_household_head = 
+  total_frame$num_white_only_household_head / total_frame$num_households
+total_frame$num_white_only_household_head = NULL
+
+total_frame$frac_black_only_household_head = 
+  total_frame$num_black_only_household_head / total_frame$num_households
+total_frame$num_black_only_household_head = NULL
+
+total_frame$frac_american_indian_or_alaskan_native_only_household_head = 
+  total_frame$num_american_indian_or_alaskan_native_only_household_head / total_frame$num_households
+total_frame$num_american_indian_or_alaskan_native_only_household_head = NULL
+
+total_frame$frac_asian_only_household_head = 
+  total_frame$num_asian_only_household_head / total_frame$num_households
+total_frame$num_asian_only_household_head = NULL
+
+total_frame$frac_native_hawaiian_or_other_pacific_islander_only_household_head = 
+  total_frame$num_native_hawaiian_or_other_pacific_islander_only_household_head / total_frame$num_households
+total_frame$num_native_hawaiian_or_other_pacific_islander_only_household_head = NULL
+
+total_frame$frac_some_other_race_only_household_head = 
+  total_frame$num_some_other_race_only_household_head / total_frame$num_households
+total_frame$num_some_other_race_only_household_head = NULL
+
+total_frame$frac_two_or_more_races_household_head = 
+  total_frame$num_two_or_more_races_household_head / total_frame$num_households
+total_frame$num_two_or_more_races_household_head = NULL
+
+total_frame$frac_hispanic_or_latino_origin_of_any_race_household_head = 
+  total_frame$num_hispanic_or_latino_origin_of_any_race_household_head / total_frame$num_households
+total_frame$num_hispanic_or_latino_origin_of_any_race_household_head = NULL
+
+total_frame$frac_white_alone_not_hispanic_or_latino_household_head = 
+  total_frame$num_white_alone_not_hispanic_or_latino_household_head / total_frame$num_households
+total_frame$num_white_alone_not_hispanic_or_latino_household_head = NULL
+
+
+
+
+
+
+temp_add = unname(as.vector(t(temp_frame[14, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$frac_15_to_24_age_household_head = temp_add/total_frame$num_households
+
+temp_add = unname(as.vector(t(temp_frame[15, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$frac_25_to_44_age_household_head = temp_add/total_frame$num_households
+
+temp_add = unname(as.vector(t(temp_frame[16, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$frac_45_to_64_age_household_head = temp_add/total_frame$num_households
+
+temp_add = unname(as.vector(t(temp_frame[17, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$frac_65_and_older_age_household_head = temp_add/total_frame$num_households
+
+
+
+
+# All the code in this block is to add median household income to
+#     total_frame
+#
+#---------------------------------------------------------------------
+temp_cols = (grep("Median income (dollars)!!Estimate", names(income_mod_data), value = TRUE, fixed = TRUE))
+print(temp_cols)
+temp_frame = income_mod_data[,c("Label (Grouping)", temp_cols)]
+
+colnames(temp_frame) = substring(names(temp_frame), 1, ifelse(seq_along(names(temp_frame)) > 1, regexpr(",", names(temp_frame)) - 1, nchar(names(temp_frame))))
+
+temp_add = unname(as.vector(t(temp_frame[2, ])))
+temp_add = as.numeric(temp_add[-1])
+total_frame$median_household_income = temp_add
+#--------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+# All the code in this block is to add the indmix mod data to 
+#     the total_frame dataframe
+#
+#-------------------------------------------------------------------------------
+temp_cols = (grep("Total!!Estimate", names(indmix_mod_data), value = TRUE))
+temp_frame = indmix_mod_data[,c("Label (Grouping)", temp_cols)]
+
+
+temp_add = unname(as.vector(t(temp_frame[1, ])))
+temp_add = as.numeric(temp_add[-1])
+print(temp_add)
+total_frame$num_full_time_16_plus_employed = temp_add
+
+
+for (i in 2:21)
+{
+  new_col_name = temp_frame$`Label (Grouping)`[i]
+  new_col_name = gsub(",", "", new_col_name)
+  new_col_name = gsub(" ", "_", new_col_name)
+  new_col_name = paste("frac_", new_col_name)
+  new_col_name = gsub(" ", "", new_col_name)
+  
+  temp_add = unname(as.vector(t(temp_frame[i, ])))
+  temp_add = as.numeric(temp_add[-1])
+  total_frame$temp_col = temp_add
+  total_frame$temp_col = total_frame$temp_col / total_frame$num_full_time_16_plus_employed
+  colnames(total_frame)[ncol(total_frame)] = new_col_name
+}
+#-------------------------------------------------------------------------------
+
+# The below code removes the columns added by the for loop (ONLY IF THEY'RE
+#     AT THE END)
+#
+# total_frame = total_frame[, -c((ncol(total_frame) - 20 + 1):ncol(total_frame))]
