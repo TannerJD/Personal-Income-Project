@@ -408,6 +408,8 @@ for (i in 2:21)
   new_col_name = paste("frac_", new_col_name)
   new_col_name = gsub(" ", "", new_col_name)
   
+  # print(new_col_name)
+  
   temp_add = unname(as.vector(t(temp_frame[i, ])))
   temp_add = as.numeric(temp_add[-1])
   total_frame$temp_col = temp_add
@@ -420,3 +422,66 @@ for (i in 2:21)
 #     AT THE END)
 #
 # total_frame = total_frame[, -c((ncol(total_frame) - 20 + 1):ncol(total_frame))]
+
+#-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+# The below code adds mobil_mod_data to total_frame
+#
+#-------------------------------------------------------------------------------
+temp_cols = (grep("!!Estimate", names(mobil_mod_data), value = TRUE))
+temp_frame = mobil_mod_data[,c("Label (Grouping)", temp_cols)]
+
+
+
+
+for (i in 2:ncol(temp_frame))
+{
+  temp_vec = temp_frame[[i]]
+  temp_denom = temp_vec[1]
+  temp_vec = sapply(temp_vec, function(x) x/temp_denom)
+  temp_frame[,i] = temp_vec
+}
+
+print(temp_frame[[1,1]])
+
+
+
+
+
+for (i in 2:length(temp_frame$`Label (Grouping)`))
+{
+  if ( grepl("  ", temp_frame[[i,1]]))
+  {
+    split_string = strsplit(temp_frame[[i,1]], "  ")
+    split_string = split_string[[1]]
+    new_str = paste(split_string[2], split_string[1])
+  }
+}
+
+
+
+total_frame = total_frame[,1:37]
+
+
+for (i in 7:length(temp_frame$`Label (Grouping)`))
+{
+  new_col_name = temp_frame$`Label (Grouping)`[i]
+  new_col_name = gsub(",", "", new_col_name)
+  new_col_name = gsub(" ", "_", new_col_name)
+  new_col_name = gsub("  ", "_", new_col_name)
+  new_col_name = paste("frac_", new_col_name)
+  new_col_name = gsub(" ", "", new_col_name)
+  
+  # print(new_col_name)
+  
+  temp_add = unname(as.vector(t(temp_frame[i, ])))
+  temp_add = as.numeric(temp_add[-1])
+  total_frame$temp_col = temp_add
+  colnames(total_frame)[ncol(total_frame)] = new_col_name
+}
