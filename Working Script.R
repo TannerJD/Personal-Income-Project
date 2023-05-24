@@ -485,3 +485,66 @@ for (i in 7:length(temp_frame$`Label (Grouping)`))
   total_frame$temp_col = temp_add
   colnames(total_frame)[ncol(total_frame)] = new_col_name
 }
+#-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+# The below code adds edu_mod_data to total_frame
+#
+#-------------------------------------------------------------------------------
+temp_cols = (grep("Total!!Estimate", names(edu_mod_data), value = TRUE))
+temp_frame = edu_mod_data[,c("Label (Grouping)", temp_cols)]
+
+temp_frame = temp_frame[-1,]
+temp_frame = temp_frame[-c(1:5,16:67),]
+
+# total_frame = total_frame[, 1:(ncol(total_frame) - 10)]
+
+
+
+for (i in 2:ncol(temp_frame))
+{
+  
+  temp_vec = temp_frame[[i]]
+  # print(temp_vec)
+  
+  for (j in 1:length(temp_vec))
+  {
+    temp_vec[j] = gsub(",", "", temp_vec[j])
+  }
+  temp_vec = as.numeric(temp_vec)
+  
+  temp_denom = temp_vec[1]
+  temp_vec_2 = sapply(temp_vec[2:length(temp_vec)], function(x) x/temp_denom)
+  temp_vec = c(temp_vec[1], temp_vec_2)
+  temp_frame[,i] = temp_vec
+}
+
+
+
+
+for (i in 1:length(temp_frame$`Label (Grouping)`))
+{
+  new_col_name = temp_frame$`Label (Grouping)`[i]
+  new_col_name = gsub(",", "", new_col_name)
+  new_col_name = gsub(" ", "_", new_col_name)
+  new_col_name = gsub("  ", "_", new_col_name)
+  
+  if (i > 1)
+  {
+    new_col_name = paste("frac_", new_col_name)
+  }
+  
+  new_col_name = gsub(" ", "", new_col_name)
+  
+  # print(new_col_name)
+  
+  temp_add = unname(as.vector(t(temp_frame[i, ])))
+  temp_add = as.numeric(temp_add[-1])
+  total_frame$temp_col = temp_add
+  colnames(total_frame)[ncol(total_frame)] = new_col_name
+}
