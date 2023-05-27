@@ -3,6 +3,7 @@ install.packages("readr")
 install.packages("rlang")
 update.packages(ask = FALSE)
 install.packages("readr", dependencies = TRUE)
+install.packages("compositions")
 
 # Remove the problematic package
 unlink("C:/Users/Nini/AppData/Local/R/win-library/4.2/cli", recursive = TRUE)
@@ -17,6 +18,9 @@ Sys.setenv(VROOM_CONNECTION_SIZE = 50000072)
 require(readr)
 require(magrittr)
 require(dplyr)
+require(compositions)
+# require(Compositional)
+# detach(package:Compositional, unload = TRUE)
 
 current_file_path = dirname(rstudioapi::getSourceEditorContext()$path)
 setwd(current_file_path)
@@ -603,3 +607,50 @@ for (i in 2:length(temp_frame$`Label (Grouping)`))
   colnames(total_frame)[ncol(total_frame)] = new_col_name
 }
 #-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+# The below code is an attempt at compositional regression
+#
+#-------------------------------------------------------------------------------
+race_frame = total_frame[, 3:11]
+age_frame = total_frame[, 12:15]
+
+race_frame = alr(race_frame)
+age_frame = alr(age_frame)
+test_frame = alri
+
+analysis_frame = cbind(race_frame, age_frame)
+analysis_frame = data.frame(analysis_frame, income = total_frame$median_household_income)
+
+analysis_frame <- mutate_all(analysis_frame, ~ ifelse(is.infinite(.), 1e-10, .))
+
+alr_model = lm(income~., data = analysis_frame)
+
+summary(alr_model)
+
+
+
+
+# Obtain the coefficient estimates from the compositional regression model
+coef_estimates <- as.numeric(coef(alr_model))
+
+# Define the inverse ALR transformation function
+# inv_alr <- function(x) exp(x) / (1 + exp(x))
+# Apply the inverse ALR transformation to the coefficient estimates
+transformed_coefs <- alrInv(coef_estimates)
+
+# print(coef_estimates)
+# print(exp(coef_estimates))
+# print(sum(coef_estimates))
+
+# Interpret the transformed coefficients
+for (i in seq_along(transformed_coefs)) {
+  cat("An increase in", names(transformed_coefs)[i], "is correlated with an increase of", transformed_coefs[i], "in county median household income.\n")
+}
