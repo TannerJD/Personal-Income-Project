@@ -622,31 +622,39 @@ for (i in 2:length(temp_frame$`Label (Grouping)`))
 race_frame = total_frame[, 3:11]
 age_frame = total_frame[, 12:15]
 
-race_frame = alr(race_frame)
-age_frame = alr(age_frame)
-test_frame = alri
+# race_frame = ilr(race_frame)
+# age_frame = ilr(age_frame)
+# test_frame = alri
 
-analysis_frame = cbind(race_frame, age_frame)
+# analysis_frame = cbind(race_frame, age_frame)
+analysis_frame = age_frame
 analysis_frame = data.frame(analysis_frame, income = total_frame$median_household_income)
 
-analysis_frame <- mutate_all(analysis_frame, ~ ifelse(is.infinite(.), 1e-10, .))
+# analysis_frame <- mutate_all(analysis_frame, ~ ifelse(is.infinite(.), 1e-10, .))
 
-alr_model = lm(income~., data = analysis_frame)
+Y = analysis_frame$income
+X = acomp(analysis_frame[,1:(ncol(analysis_frame)-1)]) 
+print(X)
 
-summary(alr_model)
+ilr_model = lm(Y~ilr(X))
+
+summary(ilr_model)
 
 
 
 
 # Obtain the coefficient estimates from the compositional regression model
-coef_estimates <- as.numeric(coef(alr_model))
+coef_estimates <- as.numeric(coef(ilr_model))
 
 # Define the inverse ALR transformation function
 # inv_alr <- function(x) exp(x) / (1 + exp(x))
 # Apply the inverse ALR transformation to the coefficient estimates
-transformed_coefs <- alrInv(coef_estimates)
+transformed_coefs <- ilrInv(coef(ilr_model)[-1],orig=X)
 
-# print(coef_estimates)
+print(ilrInv(9236.859))
+
+print(coef_estimates)
+print(transformed_coefs)
 # print(exp(coef_estimates))
 # print(sum(coef_estimates))
 
