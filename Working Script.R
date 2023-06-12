@@ -630,11 +630,19 @@ age_frame = total_frame[, 12:15]
 analysis_frame = age_frame
 analysis_frame = data.frame(analysis_frame, income = total_frame$median_household_income)
 
+analysis_frame = analysis_frame[-2675, ]
+
 # analysis_frame <- mutate_all(analysis_frame, ~ ifelse(is.infinite(.), 1e-10, .))
 
-Y = analysis_frame$income
-X = acomp(analysis_frame[,1:(ncol(analysis_frame)-1)]) 
-print(X)
+Y = log(analysis_frame$income)
+X = acomp(analysis_frame[,1:(ncol(analysis_frame)-1)])
+
+# bad_frame = subset(analysis_frame, income == 0)
+# print(X)
+# print(Y)
+# print(any(Y < 0))
+# negs = Y[Y<0]
+# print(negs)
 
 ilr_model = lm(Y~ilr(X))
 
@@ -662,3 +670,23 @@ print(transformed_coefs)
 for (i in seq_along(transformed_coefs)) {
   cat("An increase in", names(transformed_coefs)[i], "is correlated with an increase of", transformed_coefs[i], "in county median household income.\n")
 }
+
+#-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+#The following code is a naive regression attempt
+#
+#-------------------------------------------------------------------------------
+
+regres_frame = total_frame[, -c(1,2)]
+
+income_model = lm(median_household_income~., data = regres_frame)
+summary(income_model)
