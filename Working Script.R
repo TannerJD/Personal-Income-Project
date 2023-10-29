@@ -4,6 +4,7 @@ install.packages("rlang")
 update.packages(ask = FALSE)
 install.packages("readr", dependencies = TRUE)
 install.packages("compositions")
+install.packages("glmnet")
 
 # Remove the problematic package
 unlink("C:/Users/Nini/AppData/Local/R/win-library/4.2/cli", recursive = TRUE)
@@ -19,6 +20,7 @@ require(readr)
 require(magrittr)
 require(dplyr)
 require(compositions)
+require(glmnet)
 # require(Compositional)
 # detach(package:Compositional, unload = TRUE)
 
@@ -668,7 +670,7 @@ print(transformed_coefs)
 
 # Interpret the transformed coefficients
 for (i in seq_along(transformed_coefs)) {
-  cat("An increase in", names(transformed_coefs)[i], "is correlated with an increase of", transformed_coefs[i], "in county median household income.\n")
+  cat("An increase in", names(transformed_coefs)[i], "is correlated with an increase of", ilrInv(transformed_coefs[i]), "in county median household income.\n")
 }
 
 #-------------------------------------------------------------------------------
@@ -690,3 +692,142 @@ regres_frame = total_frame[, -c(1,2)]
 
 income_model = lm(median_household_income~., data = regres_frame)
 summary(income_model)
+
+#-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+#The following code splits the explanatory variables up into each composition,
+#   and then applies the ILR transform onto each collection that form a 
+#   composition.  Then recollects them into one data set
+#
+#-------------------------------------------------------------------------------
+
+trans_frame = regres_frame
+race_frame = trans_frame[, 1:7]
+
+# temp = acomp(race_frame[1,])
+# print(race_frame[1,])
+# print(temp)
+# race_ilr_frame = ilr(race_frame)
+
+race_matrix = as.matrix(race_frame)
+# temp = ilr(race_matrix)
+# print(temp)
+
+race_ilr_matrix = ilr(race_matrix)
+print(race_ilr_matrix)
+
+race_ilr_matrix = as.matrix((race_ilr_matrix))
+# print(typeof(race_ilr_matrix))
+# print(typeof(race_matrix))
+
+
+
+
+
+race_ilr_frame = as.data.frame(ilr(race_frame))
+
+
+
+
+view_frame = trans_frame[,-c(1:9)]
+
+age_frame = view_frame[,1:4]
+
+age_ilr_frame = as.data.frame(ilr(age_frame))
+
+
+
+
+
+view_frame = view_frame[,-c(1:4)]
+view_frame = view_frame[,-c(1:2)]
+
+indmix_frame = view_frame[,1:20]
+
+indmix_ilr_frame = as.data.frame(ilr(indmix_frame))
+
+
+
+
+
+
+view_frame = view_frame[,-c(1:20)]
+view_frame = view_frame[,-c(2:6)]
+view_frame = view_frame[,-c(3:7)]
+view_frame = view_frame[,-c(4:8)]
+view_frame = view_frame[,-c(5:9)]
+view_frame = view_frame[,-c(6:10)]
+
+move_frame = view_frame[,1:5]
+
+move_ilr_frame = as.data.frame(ilr(move_frame))
+
+
+
+
+
+view_frame = view_frame[,-c(1:5)]
+view_frame = view_frame[,-1]
+
+edu_frame = view_frame[,1:7]
+
+edu_ilr_frame = as.data.frame(ilr(edu_frame))
+
+
+
+
+
+
+view_frame = view_frame[,-c(1:7)]
+view_frame = view_frame[,-c(1:2)]
+
+degree_frame = view_frame
+degree_ilr_frame = as.data.frame(ilr(degree_frame))
+
+
+
+
+
+temp_frame = cbind(race_ilr_frame, age_ilr_frame, indmix_ilr_frame, move_ilr_frame, edu_ilr_frame, degree_ilr_frame)
+
+names(temp_frame) = 1:52
+
+temp_frame$median_household_income = regres_frame$median_household_income
+
+
+ilr_model = lm(median_household_income~., data = temp_frame)
+summary(ilr_model)
+
+
+
+
+#-------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+# The following code exports the total_frame to a csv for use in Tableau
+#
+#-------------------------------------------------------------------------------
+write.csv(total_frame, "tableau_csv", row.names = FALSE)
+
+
+
+
+
